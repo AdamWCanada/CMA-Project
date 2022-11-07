@@ -1,14 +1,30 @@
 @isTest
 public with sharing class AppointmentDoctorTriggerTest {
-    @TestSetup
-    static void makeDataAD(){
+@TestSetup
+static void makeDataAD(){
+TestDataFactory.appointmentTestData(199);
+TestDataFactory.doctorTestData(199);
+}
+@isTest
+public static void junctionOnj() {
 
-    Appointment__c app1 = new Appointment__c();
-    app1.Name = 'Burlington Textiles Corp of America';
-    app1.Clinic_Manager__c = null;
-    app1.Start_Date_Time__c = '2022-11-02, 12:00 p.m.';
-    app1.End_Date_Time__c = '2022-11-03, 12:00 p.m.';
-    app1.Maximum_number_of_patients__c = 15;
-    insert app1;
-    }
+List<Appointment__c> listApp = [SELECT id FROM Appointment__c];
+List<Doctor__c> listDoc = [SELECT id FROM Doctor__c];
+
+List<Appointment_Doctor__c> adFullList =new List<Appointment_Doctor__c>();
+for (Integer i = 0; i < listApp.size(); i++) {
+    Appointment_Doctor__c ad =new Appointment_Doctor__c();
+    ad.Appointment__c = listApp[i].id;
+    ad.Doctor__c = listDoc[i].id;
+    adFullList.add(ad);        
+}
+system.debug(adFullList);
+
+test.startTest();
+insert adFullList;
+test.stopTest();
+
+system.assert(!adFullList.isEmpty());
+system.assertEquals(199, adFullList.size());
+}
 }
